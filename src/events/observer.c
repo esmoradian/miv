@@ -1,5 +1,5 @@
 #include "observer.h"
-#include "../init/init.h"
+#include "../editor/editor.h"
 
 void editor_register_callback(enum editor_event event, callback_fn callback) {
     if (Editor.num_observers >= MAX_CALLBACKS) return;
