@@ -1,13 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "init.h"
+#include <time.h>
+#include "editor.h"
 #include "../events/observer.h"
 #include "../terminal/terminal.h"
 #include "../output/screen.h"
 #include "../input/error.h"
 
 static void init_editor_state(void) {
+    if (!Editor.filename) {
+        Editor.filename = malloc(256);
+        if (!Editor.filename) die("malloc");
+
+        time_t now = time(NULL);
+        struct tm* tm = localtime(&now);
+        snprintf(Editor.filename, 256, 
+                "untitled_%04d%02d%02d.txt",
+                tm->tm_year + 1900,
+                tm->tm_mon + 1,
+                tm->tm_mday);
+    }
+    
     Editor.cx = 0;
     Editor.cy = 0;
     Editor.numrows = 0;

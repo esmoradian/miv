@@ -4,32 +4,32 @@
 #include <termios.h>
 #include <stdbool.h>
 
-/*** defines ***/
 #define CTRL_KEY(k) ((k) & 0x1f)
 #define MIV_VERSION "0.0.1"
 #define MAX_CALLBACKS 32
 
-/*** enums ***/
 enum editor_key {
     ARROW_LEFT = 1000,
     ARROW_RIGHT,
     ARROW_UP,
     ARROW_DOWN,
     DEL_KEY,
-    BACKSPACE
+    BACKSPACE,
+    SAVE_KEY,
 };
 
 enum editor_event {
+    EVENT_NULL,
     EVENT_CURSOR_MOVE,
     EVENT_INSERT,
     EVENT_DELETE,
     EVENT_WINDOW_RESIZE,
     EVENT_FILE_OPEN,
     EVENT_NEWLINE,
+    EVENT_SAVE,
     EVENT_COUNT
 };
 
-/*** data structures ***/
 typedef struct editor_row {
     int size;
     char *chars;
@@ -43,7 +43,8 @@ typedef struct editor_observer {
 } editor_observer;
 
 struct editor {
-    int cx, cy;          // Cursor x and y position
+    char *filename;
+    int cx, cy;
     int screenrows;
     int screencols;
     int numrows;

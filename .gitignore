@@ -1,9 +1,6 @@
 # Build directory
 obj/
 
-# Editor binary
-editor
-
 # Prerequisites
 *.d
 
@@ -37,4 +34,14 @@ editor
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db 
+Thumbs.db
+
+# Exclude editor binary but keep src
+/miv
+
+# Exclude binaries in root
+*.exe
+*.out
+
+# Exclude build directory
+build/ 

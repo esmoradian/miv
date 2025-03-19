@@ -5,7 +5,7 @@
 #include "keyboard.h"
 #include "command.h"
 #include "error.h"
-#include "../init/init.h"
+#include "../editor/editor.h"
 #include "../events/observer.h"
 
 int editor_read_key(void) {
@@ -111,12 +111,10 @@ void editor_process_keypress(void) {
         cmd = &EDITOR_COMMANDS[NUM_EDITOR_COMMANDS - 1];  // Last command is the default handler
     }
 
-    // Execute the command
     cmd->execute(c);
     
-    // Notify cursor movement if needed
-    if (cmd->moves_cursor) {
-        editor_notify(EVENT_CURSOR_MOVE);
+    if (cmd->event != EVENT_NULL) {
+        editor_notify(cmd->event);
     }
 } 
 

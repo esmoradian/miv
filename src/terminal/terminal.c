@@ -5,7 +5,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include "terminal.h"
-#include "../init/init.h"
+#include "../editor/editor.h"
 #include "../input/error.h"
 
 void disable_raw_mode(void) {

@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "row.h"
-#include "../events/observer.h"
 
 void editor_row_insert_char(editor_row *row, int at, int c) {
     if (at < 0 || at > row->size) at = row->size;
@@ -37,8 +36,6 @@ void editor_insert_char(int c) {
 
     editor_row_insert_char(&Editor.row[Editor.cy], Editor.cx, c);
     Editor.cx++;
-
-    editor_notify(EVENT_INSERT);
 }
 
 void editor_insert_newline(void) {
@@ -53,7 +50,6 @@ void editor_insert_newline(void) {
     }
     Editor.cy++;
     Editor.cx = 0;
-    editor_notify(EVENT_NEWLINE);
 }
 
 void editor_delete_char(void) {
@@ -63,7 +59,6 @@ void editor_delete_char(void) {
     editor_row *row = &Editor.row[Editor.cy];
     if (Editor.cx < row->size) {
         editor_row_delete_char(row, Editor.cx);
-        editor_notify(EVENT_DELETE);
     } else {
         // At end of line, join with next line
         Editor.cx = row->size;
@@ -76,7 +71,6 @@ void editor_delete_char(void) {
         // Remove the next line
         memmove(&Editor.row[Editor.cy + 1], &Editor.row[Editor.cy + 2], sizeof(editor_row) * (Editor.numrows - Editor.cy - 2));
         Editor.numrows--;
-        editor_notify(EVENT_DELETE);
     }
 }
 

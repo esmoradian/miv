@@ -3,7 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "screen.h"
-#include "../init/init.h"
+#include "../editor/editor.h"
 
 void editor_draw_rows(struct abuf *ab) {
     int y;

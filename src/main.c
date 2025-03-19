@@ -1,4 +1,4 @@
-#include "init/init.h"
+#include "editor/editor.h"
 #include "terminal/terminal.h"
 #include "output/screen.h"
 #include "input/keyboard.h"

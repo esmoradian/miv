@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -pedantic -std=c99
-TARGET = editor
+TARGET = miv
 SRCDIR = src
 OBJDIR = obj
 DIRS = core input terminal buffer output events
