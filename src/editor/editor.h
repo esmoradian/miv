@@ -57,6 +57,7 @@ struct editor {
 extern struct editor Editor;
 
 void init_editor(void);
+void editor_open_file(const char* rel_path);
 
 #endif
 
