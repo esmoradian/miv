@@ -2,17 +2,24 @@
 #include "terminal/terminal.h"
 #include "output/screen.h"
 #include "input/keyboard.h"
+#include "editor/command_registry.h"
 
 struct editor Editor;
 
-int main(void) {
+int main(int argc, char **argv) {
     enable_raw_mode();
     init_editor();
+
+    if (argc >= 2) {
+        editor_open_file(argv[1]);
+    }
+
     editor_refresh_screen();
+    init_command_registry();
 
     while (1) {
         editor_process_keypress();
     }
 
     return 0;
-} 
+}
