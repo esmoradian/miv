@@ -8,7 +8,7 @@
 #define MIV_VERSION "0.0.1"
 #define MAX_CALLBACKS 32
 
-enum editor_key {
+enum EDITOR_KEY {
     ARROW_LEFT = 1000,
     ARROW_RIGHT,
     ARROW_UP,
@@ -18,43 +18,45 @@ enum editor_key {
     SAVE_KEY,
 };
 
-enum editor_event {
-    EVENT_NULL,
+enum EDITOR_EVENT {
     EVENT_CURSOR_MOVE,
     EVENT_INSERT,
     EVENT_DELETE,
     EVENT_WINDOW_RESIZE,
     EVENT_FILE_OPEN,
     EVENT_NEWLINE,
+    EVENT_COUNT,
     EVENT_SAVE,
-    EVENT_COUNT
+    EVENT_BUFFER_SAVED,
+    EVENT_STATUS_UPDATED,
+    EVENT_NULL
 };
 
-typedef struct editor_row {
+typedef struct EditorRow {
     int size;
     char *chars;
-} editor_row;
+} EditorRow;
 
 typedef void (*callback_fn)(void);
 
-typedef struct editor_observer {
-    enum editor_event event;
+typedef struct EditorObserver {
+    enum EDITOR_EVENT event;
     callback_fn callback;
-} editor_observer;
+} EditorObserver;
 
-struct editor {
+typedef struct Editor {
     char *filename;
     int cx, cy;
     int screenrows;
     int screencols;
     int numrows;
-    editor_row *row;
+    EditorRow *row;
     struct termios orig_termios;
-    editor_observer observers[MAX_CALLBACKS];
+    EditorObserver observers[MAX_CALLBACKS];
     int num_observers;
-};
+} Editor;
 
-extern struct editor Editor;
+extern struct Editor editor;
 
 void init_editor(void);
 void editor_open_file(const char* rel_path);

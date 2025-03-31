@@ -1,11 +1,7 @@
 #ifndef COMMAND_REGISTRY_H
 #define COMMAND_REGISTRY_H
 
-typedef struct Command {
-    const char* name;
-    const char* description;
-    void (*callback)(char** argv);
-} Command;
+#include "commands.h"
 
 void cli_register_command(const char* name, Command* command);
 Command* cli_lookup_command(const char* name);

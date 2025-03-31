@@ -1,3 +1,4 @@
+#include "commands.h"
 #include "command_registry.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,27 +74,15 @@ void cli_list_commands(void) {
     for (int i = 0; i < HASH_TABLE_SIZE; i++) {
         CommandEntry* entry = command_table[i];
         while (entry) {
-            printf("- %s: %s\n", entry->key, entry->command->description);
+           printf("- %s: %s\n", entry->key, entry->command->description);
             entry = entry->next;
         }
     }
 }
 
-void cmd_write(char** argv) { printf("[write] Save file\n"); }
-void cmd_quit(char** argv) { printf("[quit] Quit editor\n"); }
-void cmd_open(char** argv) { printf("[open] Open file\n"); }
-
 void init_command_registry(void) {
-    static Command builtins[] = {
-        {"write", "Save the file", cmd_write},
-        {"quit", "Quit the editor", cmd_quit},
-        {"open", "Open a file", cmd_open},
-    };
-
-    size_t num_builtins = sizeof(builtins) / sizeof(builtins[0]);
     for (size_t i = 0; i < num_builtins; i++) {
         cli_register_command(builtins[i].name, &builtins[i]);
     }
-
-    cli_register_command("w", &builtins[0]);
 }
+
