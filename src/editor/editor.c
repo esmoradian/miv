@@ -8,31 +8,31 @@
 #include <limits.h>
 #include "editor.h"
 #include "../buffer/row.h"
-#include "../events/observer.h"
+#include "../observer/observer.h"
 #include "../terminal/terminal.h"
 #include "../output/screen.h"
 #include "../input/error.h"
 
 
 static void init_editor_state(void) {
-    if (!Editor.filename) {
-        Editor.filename = malloc(256);
-        if (!Editor.filename) die("malloc");
+    if (!editor.filename) {
+        editor.filename = malloc(256);
+        if (!editor.filename) die("malloc");
 
         time_t now = time(NULL);
         struct tm* tm = localtime(&now);
-        snprintf(Editor.filename, 256, 
+        snprintf(editor.filename, 256, 
                 "untitled_%04d%02d%02d.txt",
                 tm->tm_year + 1900,
                 tm->tm_mon + 1,
                 tm->tm_mday);
     }
     
-    Editor.cx = 0;
-    Editor.cy = 0;
-    Editor.numrows = 0;
-    Editor.row = NULL;
-    Editor.num_observers = 0;
+    editor.cx = 0;
+    editor.cy = 0;
+    editor.numrows = 0;
+    editor.row = NULL;
+    editor.num_observers = 0;
 }
 
 static void init_event_handlers(void) {
@@ -45,7 +45,7 @@ static void init_event_handlers(void) {
 }
 
 static void init_terminal_size(void) {
-    if (get_window_size(&Editor.screenrows, &Editor.screencols) == -1) {
+    if (get_window_size(&editor.screenrows, &editor.screencols) == -1) {
         die("getWindowSize");
     }
 }
@@ -65,7 +65,7 @@ void editor_load_file(FILE* fp) {
         while (len > 0 && (line[len - 1] == '\n' || line[len - 1] == '\r')) {
             len--;
         }
-        editor_insert_row(Editor.numrows, line, len);
+        editor_insert_row(editor.numrows, line, len);
     }
 
     free(line);
@@ -106,8 +106,8 @@ void editor_open_file(const char* rel_path) {
         }
     }
 
-    Editor.filename = malloc(strlen(abs_path) + 1);
-    strcpy(Editor.filename, abs_path);
+    editor.filename = malloc(strlen(abs_path) + 1);
+    strcpy(editor.filename, abs_path);
 
     editor_load_file(fp);
 

@@ -2,11 +2,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "keyboard.h"
-#include "command.h"
+#include "events.h"
 #include "error.h"
 #include "../editor/editor.h"
-#include "../events/observer.h"
+#include "../observer/observer.h"
+#include "../buffer/row.h"
+
+void handle_arrow_key(InputContext *ctx) {
+    editor_move_cursor(ctx);
+}
+
+void handle_delete(InputContext *ctx) {
+    (void)ctx;
+    editor_delete_char();
+}
+
+void handle_backspace(InputContext *ctx) {
+    (void)ctx;
+    editor_backspace_char();
+}
+
+void handle_newline(InputContext *ctx) {
+    (void)ctx;
+    editor_insert_newline();
+}
+
+void handle_char_insert(InputContext *ctx) {
+    if (!iscntrl(ctx->key)) {
+        editor_insert_char(ctx);
+    }
+}
 
 int editor_read_key(void) {
     int nread;
@@ -45,43 +72,45 @@ int editor_read_key(void) {
     }
 }
 
-void editor_move_cursor(int key) {
-    editor_row *row = (Editor.cy >= Editor.numrows) ? NULL : &Editor.row[Editor.cy];
+void editor_move_cursor(InputContext *ctx) {
+    EditorRow *row = (editor.cy >= editor.numrows) ? NULL : &editor.row[editor.cy];
+
+    int key = ctx->key;
 
     switch (key) {
         case ARROW_LEFT:
-            if (Editor.cx != 0) {
-                Editor.cx--;
-            } else if (Editor.cy > 0) {
-                Editor.cy--;
-                Editor.cx = Editor.row[Editor.cy].size;
+            if (editor.cx != 0) {
+                editor.cx--;
+            } else if (editor.cy > 0) {
+                editor.cy--;
+                editor.cx = editor.row[editor.cy].size;
             }
             break;
         case ARROW_RIGHT:
-            if (row && Editor.cx < row->size) {
-                Editor.cx++;
-            } else if (row && Editor.cx == row->size) {
-                Editor.cy++;
-                Editor.cx = 0;
+            if (row && editor.cx < row->size) {
+                editor.cx++;
+            } else if (row && editor.cx == row->size) {
+                editor.cy++;
+                editor.cx = 0;
             }
             break;
         case ARROW_UP:
-            if (Editor.cy != 0) {
-                Editor.cy--;
+            if (editor.cy != 0) {
+                editor.cy--;
             }
             break;
         case ARROW_DOWN:
-            if (Editor.cy < Editor.numrows) {
-                Editor.cy++;
+            if (editor.cy < editor.numrows) {
+                editor.cy++;
             }
             break;
     }
 
     // Snap cursor to end of line if it's beyond the current line
-    row = (Editor.cy >= Editor.numrows) ? NULL : &Editor.row[Editor.cy];
+    row = (editor.cy >= editor.numrows) ? NULL : &editor.row[editor.cy];
     int rowlen = row ? row->size : 0;
-    if (Editor.cx > rowlen) {
-        Editor.cx = rowlen;
+    if (editor.cx > rowlen) {
+        editor.cx = rowlen;
     }
 }
 
@@ -96,25 +125,28 @@ void editor_process_keypress(void) {
     }
 
     // Find and execute the command
-    const struct editor_command *cmd = NULL;
+    const EventListener *command = NULL;
     
     // First try to find an exact match
-    for (size_t i = 0; i < NUM_EDITOR_COMMANDS; i++) {
-        if (EDITOR_COMMANDS[i].key == c) {
-            cmd = &EDITOR_COMMANDS[i];
+    for (size_t i = 0; i < num_event_listeners; i++) {
+        if (event_listeners[i].key == c) {
+            command = &event_listeners[i];
             break;
         }
     }
     
     // If no exact match found, use the default handler
-    if (cmd == NULL) {
-        cmd = &EDITOR_COMMANDS[NUM_EDITOR_COMMANDS - 1];  // Last command is the default handler
+    if (command == NULL) {
+        command = &event_listeners[num_event_listeners - 1];  // Last command is the default handler
     }
 
-    cmd->execute(c);
+    InputContext ctx = { .key = c, .cli_args = NULL };
+
+    command->execute(&ctx);
     
-    if (cmd->event != EVENT_NULL) {
-        editor_notify(cmd->event);
+    if (command->events) {
+        for (int i = 0; command->events[i] != EVENT_NULL; i++) {
+            editor_notify(command->events[i]);
+        }
     }
-} 
-
+}

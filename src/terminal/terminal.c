@@ -9,19 +9,19 @@
 #include "../input/error.h"
 
 void disable_raw_mode(void) {
-    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &Editor.orig_termios) == -1) {
+    if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &editor.orig_termios) == -1) {
         die("tcsetattr");
     }
 }
 
 void enable_raw_mode(void) {
-    if (tcgetattr(STDIN_FILENO, &Editor.orig_termios) == -1) {
+    if (tcgetattr(STDIN_FILENO, &editor.orig_termios) == -1) {
         die("tcgetattr");
     }
 
     atexit(disable_raw_mode);
 
-    struct termios raw = Editor.orig_termios;
+    struct termios raw = editor.orig_termios;
     raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
     raw.c_oflag &= ~(OPOST);
     raw.c_cflag |= (CS8);

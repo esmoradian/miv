@@ -7,14 +7,14 @@
 
 void editor_draw_rows(struct abuf *ab) {
     int y;
-    for (y = 0; y < Editor.screenrows; y++) {
-        if (y >= Editor.numrows) {
-            if (Editor.numrows == 0 && y == Editor.screenrows / 3) {
+    for (y = 0; y < editor.screenrows; y++) {
+        if (y >= editor.numrows) {
+            if (editor.numrows == 0 && y == editor.screenrows / 3) {
                 char welcome[80];
                 int welcomelen = snprintf(welcome, sizeof(welcome),
                     "MIV editor -- version %s", MIV_VERSION);
-                if (welcomelen > Editor.screencols) welcomelen = Editor.screencols;
-                int padding = (Editor.screencols - welcomelen) / 2;
+                if (welcomelen > editor.screencols) welcomelen = editor.screencols;
+                int padding = (editor.screencols - welcomelen) / 2;
                 if (padding) {
                     abuf_append(ab, "~", 1);
                     padding--;
@@ -25,13 +25,13 @@ void editor_draw_rows(struct abuf *ab) {
                 abuf_append(ab, "~", 1);
             }
         } else {
-            int len = Editor.row[y].size;
-            if (len > Editor.screencols) len = Editor.screencols;
-            abuf_append(ab, Editor.row[y].chars, len);
+            int len = editor.row[y].size;
+            if (len > editor.screencols) len = editor.screencols;
+            abuf_append(ab, editor.row[y].chars, len);
         }
 
         abuf_append(ab, "\x1b[K", 3);
-        if (y < Editor.screenrows - 1) {
+        if (y < editor.screenrows - 1) {
             abuf_append(ab, "\r\n", 2);
         }
     }
@@ -46,11 +46,11 @@ void editor_refresh_screen(void) {
     editor_draw_rows(&ab);
 
     char buf[32];
-    snprintf(buf, sizeof(buf), "\x1b[%d;%dH", Editor.cy + 1, Editor.cx + 1);
+    snprintf(buf, sizeof(buf), "\x1b[%d;%dH", editor.cy + 1, editor.cx + 1);
     abuf_append(&ab, buf, strlen(buf));
 
     abuf_append(&ab, "\x1b[?25h", 6);  // Show cursor
 
     write(STDOUT_FILENO, ab.b, ab.len);
     abuf_free(&ab);
-} 
+}
