@@ -9,12 +9,19 @@
 #include "../input/error.h"
 
 void disable_raw_mode(void) {
+    if (!isatty(STDIN_FILENO)) {
+        return;
+    }
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &editor.orig_termios) == -1) {
         die("tcsetattr");
     }
 }
 
 void enable_raw_mode(void) {
+    if (!isatty(STDIN_FILENO)) {
+        return;
+    }
+
     if (tcgetattr(STDIN_FILENO, &editor.orig_termios) == -1) {
         die("tcgetattr");
     }

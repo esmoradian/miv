@@ -13,7 +13,6 @@
 #include "../output/screen.h"
 #include "../input/error.h"
 
-
 static void init_editor_state(void) {
     if (!editor.filename) {
         editor.filename = malloc(256);
